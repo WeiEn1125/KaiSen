@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { gameEnd, player1Arrange, player1Attack, player2Arrange, player2Attack } from '../store/game-state/game.action';
+import { gameEnd, player1Arrange, player1Attack, player2Arrange, player2Attack } from '../../store/game-state/game.action';
 import { Observable, Subscription } from 'rxjs';
-import { selectGameStatus } from '../store/game-state/game.selector';
-import { GameState } from '../store/game-state/game.reducer';
+import { selectGameStatus } from '../../store/game-state/game.selector';
+import { GameState } from '../../store/game-state/game.reducer';
 
 @Component({
   selector: 'app-game',

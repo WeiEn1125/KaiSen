@@ -1,0 +1,14 @@
+<table class="board">
+    <tbody>
+      <tr *ngFor="let row of board; let i = index">
+        <td *ngFor="let cell of row; let j = index" class="cell"
+        (click)="cellClicked(i, j)">
+          <!-- 根據棋盤上的值來渲染不同的遊戲元素 -->
+          <div class="cell-content" [ngClass]="{'ship': cell === 1, 'empty': cell === 0}">
+            <!-- 這裡可以放置具體的遊戲元素內容，例如船隻的圖片或其他 -->
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  

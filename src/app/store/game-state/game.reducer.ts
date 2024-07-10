@@ -13,7 +13,7 @@ export const initialState: GameState = {
     on(GameActions.player2Arrange, state => ({ ...state, status: GameStateEnum.PLAYER2_ARRANGE })),
     on(GameActions.player1Attack, state => ({ ...state, status: GameStateEnum.PLAYER1_ATTACK })),
     on(GameActions.player2Attack, state => ({ ...state, status: GameStateEnum.PLAYER2_ATTACK })),
-    on(GameActions.endGame, state => ({ ...state, status: GameStateEnum.GAME_END }))
+    on(GameActions.gameEnd, state => ({ ...state, status: GameStateEnum.GAME_END }))
   );
 
 export { GameState };
