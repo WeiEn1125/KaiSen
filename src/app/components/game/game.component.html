@@ -1,6 +1,11 @@
-<p>Game Status: {{ gameStatus }}</p>
-<button (click)="player1Arrange()">PLayer1 Arrange</button>
-<button (click)="player2Arrange()">Player2 Arrange</button>
-<button (click)="player1Attack()">Player1 Attack</button>
-<button (click)="player2Attack()">Player2 Attack</button>
-<button (click)="gameEnd()">Game end</button>
+
+<div class="main-container">
+    <p>Game Status: {{ gameState$ | async }}</p>
+    <button (click)="player1Arrange()">PLayer1 Arrange</button>
+    <button (click)="player2Arrange()">Player2 Arrange</button>
+    <button (click)="player1Attack()">Player1 Attack</button>
+    <button (click)="player2Attack()">Player2 Attack</button>
+    <button (click)="gameEnd()">Game end</button>
+    <app-board></app-board>
+    <app-ship ></app-ship>
+</div>

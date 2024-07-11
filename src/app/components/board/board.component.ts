@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
-interface Cell {
-  hasShip: boolean;
-}
+import { Component, EventEmitter, Output } from '@angular/core';
+import { ConsoleService } from '../../service/console.service';
+import { Ship } from '../../models/ship/ship.model';
+import { ShipService } from '../../service/ship.service';
+import { Cell } from '../../models/board/board.model';
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -10,10 +12,17 @@ interface Cell {
 export class BoardComponent {
   rows: number = 10; // 表格的行數
   cols: number = 10; // 表格的列數
-  board: any[][] = []; // 棋盤，用來存放遊戲元素或狀態
+  board: Cell[][] = []; // 棋盤，用來存放遊戲元素或狀態
+  selectedShip: Ship | null = null;
+  constructor(private consoleService: ConsoleService, private shipService: ShipService) {
+  }
 
-  constructor() {
+  ngOnInit() {
     this.initializeBoard();
+    this.shipService.selectedShip$.subscribe(ship => {
+      this.selectedShip = ship;
+      console.log('Selected ship:', ship);
+    });
   }
 
   private initializeBoard() {
@@ -21,20 +30,97 @@ export class BoardComponent {
     for (let i = 0; i < this.rows; i++) {
       this.board[i] = [];
       for (let j = 0; j < this.cols; j++) {
-        // 假設 0 表示空格子，1 表示有船隻，可以根據遊戲邏輯修改
-        this.board[i][j] = 0;
+        this.board[i][j] = { hasShip: false, color: '#add8e6' };
       }
     }
     // 假設設置一些船隻的初始位置
-    this.board[0][0] = 1;
-    this.board[1][1] = 1;
-    this.board[2][2] = 1;
     // 可以根據遊戲邏輯和需要進一步填入其他遊戲元素
   }
 
   cellClicked(row: number, col: number) {
-    // 處理格子被點擊的事件，可以在這裡添加具體的邏輯
-    console.log(`Cell clicked: (${row}, ${col})`);
-    // 可以在這裡更新遊戲狀態，例如標記為被點擊或執行其他動作
+    this.consoleService.log(`Cell clicked: (${row}, ${col})`);
+    if (this.selectedShip) {
+      this.placeSelectedShip(row, col);
+    }
+  }
+
+  drawGrid(row: number, col: number, isEnter: boolean) {
+    if (this.selectedShip) {
+      for (let i = 0; i < this.selectedShip.size; i++) {
+        if (this.selectedShip.isHorizontal) {
+          if (i % 2 == 0) {
+            this.updateBoardCell(row, col + (i / 2), isEnter, this.selectedShip.color);
+          } else {
+            this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, this.selectedShip.color);
+          }
+        } else {
+          if (i % 2 == 0) {
+            this.updateBoardCell(row + (i / 2), col, isEnter, this.selectedShip.color);
+          } else {
+            this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, this.selectedShip.color);
+          }
+        }
+      }
+    }
+  }
+
+  updateBoardCell(row: number, col: number, isEnter: boolean, color: string) {
+    if (this.board[row] && this.board[row][col] && !this.board[row][col].hasShip) {
+      this.board[row][col].color = isEnter ? color : '#add8e6';
+    }
+  }
+
+  placeSelectedShip(row: number, col: number) {
+    if (this.selectedShip && this.canPlaceShip(row, col)) {
+      for (let i = 0; i < this.selectedShip.size; i++) {
+        if (this.selectedShip.isHorizontal) {
+          if (i % 2 == 0) {
+            this.updateBoardCellOnPlace(row, col + (i / 2));
+          } else {
+            this.updateBoardCellOnPlace(row, col - Math.ceil(i / 2));
+          }
+        } else {
+          if (i % 2 == 0) {
+            this.updateBoardCellOnPlace(row + (i / 2), col);
+          } else {
+            this.updateBoardCellOnPlace(row - Math.ceil(i / 2), col);
+          }
+        }
+      }
+      this.shipService.placeShip(this.selectedShip);
+      this.selectedShip = null;
+    }
+  }
+
+  updateBoardCellOnPlace(row: number, col: number) {
+    if (this.board[row] && this.board[row][col]) {
+      this.board[row][col].hasShip = true;
+      this.board[row][col].color = this.selectedShip!.color;
+    }
+  }
+
+  canPlaceShip(row: number, col: number): boolean {
+    for (let i = 0; i < this.selectedShip!.size; i++) {
+      if (this.selectedShip!.isHorizontal) {
+        if (i % 2 == 0) {
+          if (this.board[row][col + (i / 2)] == null || this.board[row][col + (i / 2)].hasShip)
+            return false;
+        }
+        else {
+          if (this.board[row][col - Math.ceil(i / 2)] == null || this.board[row][col - Math.ceil(i / 2)].hasShip)
+            return false
+        }
+      }
+      else {
+        if (i % 2 == 0) {
+          if (this.board[row + (i / 2)] == null || this.board[row + (i / 2)][col].hasShip)
+            return false;
+        }
+        else
+          if (this.board[row - Math.ceil(i / 2)] == null || this.board[row - Math.ceil(i / 2)][col].hasShip)
+            return false;
+      }
+    }
+    return true;
   }
 }

@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { gameEnd, player1Arrange, player1Attack, player2Arrange, player2Attack } from '../../store/game-state/game.action';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, tap } from 'rxjs';
 import { selectGameStatus } from '../../store/game-state/game.selector';
 import { GameState } from '../../store/game-state/game.reducer';
+import { Ship } from '../../models/ship/ship.model';
+import { GameStateEnum } from '../../models/game-state/game-state.enum';
 
 @Component({
   selector: 'app-game',
@@ -11,20 +13,22 @@ import { GameState } from '../../store/game-state/game.reducer';
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent {
-  gameStatus!: string;
-  private gameStatusSubscription!: Subscription;
+  gameState$!: Observable<string>;
   constructor(private store: Store<GameState>) { }
 
   ngOnInit() {
-    this.gameStatusSubscription = this.store.select(selectGameStatus).subscribe(status => {
-      this.gameStatus = status;
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.gameStatusSubscription) {
-      this.gameStatusSubscription.unsubscribe();
-    }
+    this.gameState$ = this.store.select(selectGameStatus);
+      this.gameState$.pipe(
+        tap(state => {
+          switch (state) {
+            case GameStateEnum.PLAYER1_ARRANGE:
+              console.log(123);
+              break;
+            default:
+              break;
+          }
+        })
+      ).subscribe();
   }
 
   player1Arrange(): void {
@@ -46,4 +50,7 @@ export class GameComponent {
   gameEnd(): void {
     this.store.dispatch(gameEnd());
   }
+ 
+
+  
 }
