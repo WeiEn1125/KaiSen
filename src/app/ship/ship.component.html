@@ -1,13 +1,17 @@
 <div class="available-ships">
-    <h3>Available Ships</h3>
+    <div class="title-area">
+        <h3>Available Ships</h3>
+        <button (click)="rotateShip()">Rotate</button>
+    </div>
     <div class="ship-area">
-        <div *ngFor="let ship of ships">
-            <div *ngIf="!ship.hasPut" >
-                <div class="ship" [ngStyle]="{ 'background-color': ship.color}" 
-                     *ngFor="let cell of [].constructor(ship.size)"
-                     (click)="shipClicked(ship)">
+        <ng-container *ngFor="let ship of ships">
+            <div *ngIf="!ship.hasPut">
+                <div class="ship" [ngStyle]="{ 'flex-direction': ship.isHorizontal ? 'row' : 'column' }">
+                    <div class="ship-element" [ngStyle]="{ 'background-color': ship.color }"
+                        *ngFor="let element of getArray(ship.size)" (click)="shipClicked(ship)">
+                    </div>
                 </div>
-              </div>
-        </div>
+            </div>
+        </ng-container>
     </div>
 </div>

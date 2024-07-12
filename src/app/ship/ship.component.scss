@@ -1,19 +1,31 @@
 .available-ships {
+    min-width: 250px;
     display: flex;
     flex-direction: column;
     border: 1px solid #ccc;
     padding: 10px;
 
+    .title-area {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
     .ship-area {
         display: flex;
         gap: 50px;
-    }
+        justify-content: center;
 
-    .ship {
-        width: 30px;
-        height: 30px;
-        border: 1px solid #ccc;
-        display: inline-block;
-        cursor: pointer;
+        .ship {
+            display: flex;
+        }
+
+        .ship-element {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            cursor: pointer;
+        }
     }
 }

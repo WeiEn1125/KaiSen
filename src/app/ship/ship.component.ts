@@ -1,16 +1,15 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Ship } from '../models/ship/ship.model';
 import { ShipService } from '../service/ship.service';
 
 @Component({
   selector: 'app-ship',
   templateUrl: './ship.component.html',
-  styleUrl: './ship.component.scss'
+  styleUrls: ['./ship.component.scss']
 })
-export class ShipComponent {
-
-
+export class ShipComponent implements OnInit {
   ships: Ship[] | null = null;
+
   constructor(private shipService: ShipService) { }
 
   ngOnInit() {
@@ -19,5 +18,17 @@ export class ShipComponent {
 
   shipClicked(ship: Ship) {
     this.shipService.selectShip(ship);
+  }
+
+  rotateShip() {
+    if (this.ships) {
+      this.ships.forEach(ship => {
+        ship.isHorizontal = !ship.isHorizontal;
+      });
+    }
+  }
+
+  getArray(size: number) {
+    return new Array(size);
   }
 }

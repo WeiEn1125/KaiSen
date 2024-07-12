@@ -21,7 +21,6 @@ export class BoardComponent {
     this.initializeBoard();
     this.shipService.selectedShip$.subscribe(ship => {
       this.selectedShip = ship;
-      console.log('Selected ship:', ship);
     });
   }
 

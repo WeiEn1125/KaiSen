@@ -22,7 +22,6 @@ export class GameComponent {
         tap(state => {
           switch (state) {
             case GameStateEnum.PLAYER1_ARRANGE:
-              console.log(123);
               break;
             default:
               break;

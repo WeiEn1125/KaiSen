@@ -26,7 +26,6 @@ export class ShipService {
     const index = this.ships.findIndex(s => s === ship);
     if (index !== -1) {
       this.ships[index].hasPut = true;
-      this.selectedShipSource.next(this.ships[index]);
     }
   }
 
