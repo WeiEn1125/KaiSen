@@ -29,6 +29,24 @@ export class ShipService {
     }
   }
 
+  rotateShip() {
+    if (this.ships) {
+      this.ships.forEach(ship => {
+        ship.isHorizontal = !ship.isHorizontal;
+      });
+    }
+  }
+
+  resetShip() {
+    if (this.ships) {
+      this.ships.forEach(ship => {
+        ship.isHorizontal = true;
+        ship.isSelected = false;
+        ship.hasPut = false;
+      });
+    }
+  }
+
   getShips() {
     return this.ships;
   }

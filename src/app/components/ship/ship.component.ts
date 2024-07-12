@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Ship } from '../models/ship/ship.model';
-import { ShipService } from '../service/ship.service';
+import { Ship } from '../../models/ship/ship.model';
+import { ShipService } from '../../service/ship.service';
 
 @Component({
   selector: 'app-ship',
@@ -21,11 +21,7 @@ export class ShipComponent implements OnInit {
   }
 
   rotateShip() {
-    if (this.ships) {
-      this.ships.forEach(ship => {
-        ship.isHorizontal = !ship.isHorizontal;
-      });
-    }
+    this.shipService.rotateShip();
   }
 
   getArray(size: number) {

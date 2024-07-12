@@ -1,3 +1,4 @@
+@import "../../style/variables";
 .available-ships {
     min-width: 250px;
     display: flex;
@@ -6,16 +7,13 @@
     padding: 10px;
 
     .title-area {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
+       @include flex-center-row;
+       justify-content: space-around;
     }
 
     .ship-area {
-        display: flex;
+        @include flex-center-row;
         gap: 50px;
-        justify-content: center;
-
         .ship {
             display: flex;
         }

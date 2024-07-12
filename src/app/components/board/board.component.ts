@@ -122,4 +122,14 @@ export class BoardComponent {
     }
     return true;
   }
+
+  resetBoard() {
+    this.shipService.resetShip();
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        this.board[i][j].hasShip = false;
+        this.board[i][j].color = '#add8e6';
+      }
+    }
+  }
 }
