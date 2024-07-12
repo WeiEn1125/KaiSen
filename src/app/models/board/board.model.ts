@@ -1,4 +1,5 @@
 export interface Cell {
-    hasShip: boolean;
-    color: string;
-  }
+  hasShip: boolean;
+  color: string;
+  isAttacked: boolean;
+}

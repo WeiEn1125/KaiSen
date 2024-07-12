@@ -1,10 +1,6 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { gameEnd, player1Arrange, player1Attack, player2Arrange, player2Attack } from '../../store/game-state/game.action';
-import { Observable, Subscription, tap } from 'rxjs';
-import { selectGameStatus } from '../../store/game-state/game.selector';
-import { GameState } from '../../store/game-state/game.reducer';
-import { Ship } from '../../models/ship/ship.model';
+import { Observable, tap } from 'rxjs';
+import { GameStateService } from '../../service/game-state.service';
 import { GameStateEnum } from '../../models/game-state/game-state.enum';
 
 @Component({
@@ -14,42 +10,38 @@ import { GameStateEnum } from '../../models/game-state/game-state.enum';
 })
 export class GameComponent {
   gameState$!: Observable<string>;
-  constructor(private store: Store<GameState>) { }
+  currentGameState!: string;
+  GameStateEnum = GameStateEnum; 
+ 
+  constructor(private gameStateService: GameStateService) { }
 
   ngOnInit() {
-    this.gameState$ = this.store.select(selectGameStatus);
-      this.gameState$.pipe(
-        tap(state => {
-          switch (state) {
-            case GameStateEnum.PLAYER1_ARRANGE:
-              break;
-            default:
-              break;
-          }
-        })
-      ).subscribe();
+    this.gameStateService.init();
+    this.gameState$ = this.gameStateService.gameState$;
+    this.gameState$.pipe(
+      tap(state => {
+        this.currentGameState = state;
+      })
+    ).subscribe();
   }
 
   player1Arrange(): void {
-    this.store.dispatch(player1Arrange());
+    this.gameStateService.player1Arrange();
   }
 
   player2Arrange(): void {
-    this.store.dispatch(player2Arrange());
+    this.gameStateService.player2Arrange();
   }
 
   player1Attack(): void {
-    this.store.dispatch(player1Attack());
+    this.gameStateService.player1Attack();
   }
 
   player2Attack(): void {
-    this.store.dispatch(player2Attack());
+    this.gameStateService.player2Attack();
   }
 
   gameEnd(): void {
-    this.store.dispatch(gameEnd());
+    this.gameStateService.gameEnd();
   }
- 
-
-  
 }

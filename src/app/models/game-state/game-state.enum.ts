@@ -5,4 +5,4 @@ export enum GameStateEnum {
     PLAYER1_ATTACK = "PLAYER1_ATTACK",
     PLAYER2_ATTACK = "PLAYER2_ATTACK",
     GAME_END = "GAME_END",
-}
+};

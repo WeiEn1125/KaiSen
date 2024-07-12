@@ -7,20 +7,30 @@ import { Subject } from 'rxjs';
 })
 export class ShipService {
 
-  private ships: Ship[] = [
-    { color: '#345500', size: 5, isSelected: false, hasPut: false, isHorizontal: true },
-    { color: '#145500', size: 4, isSelected: false, hasPut: false, isHorizontal: true },
-    { color: '#535500', size: 3, isSelected: false, hasPut: false, isHorizontal: true },
-    { color: '#612300', size: 3, isSelected: false, hasPut: false, isHorizontal: true },
-    { color: '#142220', size: 2, isSelected: false, hasPut: false, isHorizontal: true },
-  ];
+  private ships: Ship[] = [];
+  private selectedShip: Ship | null = null;
 
   private selectedShipSource = new Subject<Ship>();
   selectedShip$ = this.selectedShipSource.asObservable();
 
+  initShips() {
+    this.ships = [
+      { color: '#345500', size: 5, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#145500', size: 4, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#535500', size: 3, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#612300', size: 3, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#142220', size: 2, isSelected: false, hasPut: false, isHorizontal: true },
+    ];
+  }
   selectShip(ship: Ship) {
+    if (this.selectedShip) {
+      this.selectedShip.isSelected = false;
+    }
+    ship.isSelected = true;
+    this.selectedShip = ship;
     this.selectedShipSource.next(ship);
   }
+
 
   placeShip(ship: Ship) {
     const index = this.ships.findIndex(s => s === ship);
@@ -49,5 +59,13 @@ export class ShipService {
 
   getShips() {
     return this.ships;
+  }
+
+  checkAllShipsPlaced(): boolean {
+    for (let i = 0; i < this.ships.length; i++) {
+      if (!this.ships[i].hasPut)
+        return false;
+    }
+    return true
   }
 }

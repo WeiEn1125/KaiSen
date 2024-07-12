@@ -14,6 +14,12 @@ export class ConsoleService {
     }
   }
 
+  trace(...data: any[]): void {
+    if (this.debugMode) {
+      console.trace(...data);
+    }
+  }
+
   info(...data: any[]): void {
     if (this.debugMode) {
       console.info(...data);

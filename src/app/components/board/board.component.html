@@ -1,14 +1,17 @@
-<table class="board">
-  <tbody>
-    <tr *ngFor="let row of board; let i = index">
-      <td *ngFor="let cell of row; let j = index" class="cell" 
-          (click)="cellClicked(i, j)"
-          (mouseover)="drawGrid(i, j, true)" 
-          (mouseout)="drawGrid(i, j, false)">
-        <div class="cell-content" [ngStyle]="{ 'background-color': cell.color }">
-        </div>
-      </td>
-    </tr>
-  </tbody>
-  <button (click)="resetBoard()">Reset</button>
-</table>
+<div class="board">
+  <table>
+    <tbody>
+      <tr *ngFor="let row of board; let i = index">
+        <td *ngFor="let cell of row; let j = index" class="cell" (click)="cellClicked(i, j)"
+          (mouseover)="drawGrid(i, j, true)" (mouseout)="drawGrid(i, j, false)">
+          <div class="cell-content" [ngStyle]="{ 'background-color': cell.color }">
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="currentGameState === GameStateEnum.PLAYER1_ARRANGE || currentGameState === GameStateEnum.PLAYER2_ARRANGE">
+    <button (click)="resetBoard()">Reset</button>
+    <button [disabled]="!checkCanConfirmShipArrangement()" (click)="confirmShipArrangement()">Submit</button>
+  </div>
+</div>

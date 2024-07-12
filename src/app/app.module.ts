@@ -20,8 +20,9 @@ import { ShipComponent } from './components/ship/ship.component';
     BrowserModule,
     AppRoutingModule,
     DragDropModule,
-    StoreModule.forRoot({}, {}),
-    StoreModule.forFeature('gameState', gameReducer),
+    StoreModule.forRoot({
+      gameState: gameReducer
+    }),
   ],
   providers: [
 

@@ -13,6 +13,7 @@ export class ShipComponent implements OnInit {
   constructor(private shipService: ShipService) { }
 
   ngOnInit() {
+    this.shipService.initShips();
     this.ships = this.shipService.getShips();
   }
 

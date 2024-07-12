@@ -16,5 +16,5 @@ export const initialState: GameState = {
     on(GameActions.gameEnd, state => ({ ...state, status: GameStateEnum.GAME_END }))
   );
 
-export { GameState };
+
 

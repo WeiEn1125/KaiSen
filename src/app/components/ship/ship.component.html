@@ -6,7 +6,8 @@
     <div class="ship-area">
         <ng-container *ngFor="let ship of ships">
             <div *ngIf="!ship.hasPut">
-                <div class="ship" [ngStyle]="{ 'flex-direction': ship.isHorizontal ? 'row' : 'column' }">
+                <div class="ship" [ngClass]="{ 'selected': ship.isSelected }"
+                    [ngStyle]="{ 'flex-direction': ship.isHorizontal ? 'row' : 'column' }">
                     <div class="ship-element" [ngStyle]="{ 'background-color': ship.color }"
                         *ngFor="let element of getArray(ship.size)" (click)="shipClicked(ship)">
                     </div>
