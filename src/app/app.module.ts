@@ -6,9 +6,11 @@ import { StoreModule } from '@ngrx/store';
 import { GameComponent } from './components/game/game.component';
 import { gameReducer } from './store/game-state/game.reducer';
 import { BoardComponent } from './components/board/board.component';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ShipComponent } from './components/ship/ship.component';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import { FormsModule } from '@angular/forms';  
 
+const config: SocketIoConfig = { url: 'http://localhost:3000', options: { autoConnect: false } };
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,11 +20,12 @@ import { ShipComponent } from './components/ship/ship.component';
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     AppRoutingModule,
-    DragDropModule,
     StoreModule.forRoot({
       gameState: gameReducer
     }),
+    SocketIoModule.forRoot(config)
   ],
   providers: [
 
