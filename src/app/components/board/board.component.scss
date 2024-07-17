@@ -1,15 +1,21 @@
 @import "../../style/variables";
+
 .board {
   @include flex-center-column;
   border-collapse: collapse;
   margin: 20px auto;
   gap: 10px;
+
+  table {
+    border-spacing: 1px;
+  }
 }
 
 .cell {
   width: 30px;
   height: 30px;
-  border: 1px solid #ccc;
+  padding: 0;
+  margin: 0;
 }
 
 .cell-content {
@@ -18,8 +24,8 @@
   cursor: pointer;
 }
 
-.ship {
-  background-color: navy;
+.clicked {
+  transition: background-color 1s;
 }
 
 .empty {

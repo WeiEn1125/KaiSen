@@ -15,11 +15,11 @@ export class ShipService {
 
   initShips() {
     this.ships = [
-      { color: '#345500', size: 5, isSelected: false, hasPut: false, isHorizontal: true },
-      { color: '#145500', size: 4, isSelected: false, hasPut: false, isHorizontal: true },
-      { color: '#535500', size: 3, isSelected: false, hasPut: false, isHorizontal: true },
-      { color: '#612300', size: 3, isSelected: false, hasPut: false, isHorizontal: true },
-      { color: '#142220', size: 2, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#708090', size: 5, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#708090', size: 4, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#708090', size: 3, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#708090', size: 2, isSelected: false, hasPut: false, isHorizontal: true },
+      { color: '#708090', size: 1, isSelected: false, hasPut: false, isHorizontal: true },
     ];
   }
   selectShip(ship: Ship) {

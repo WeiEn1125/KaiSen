@@ -1,0 +1,6 @@
+@import "../../style/variables";
+
+.board-area{
+    @include flex-center-row;
+    gap: 80px;
+}

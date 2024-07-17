@@ -4,7 +4,10 @@
       <tr *ngFor="let row of board; let i = index">
         <td *ngFor="let cell of row; let j = index" class="cell" (click)="cellClicked(i, j)"
           (mouseover)="drawGrid(i, j, true)" (mouseout)="drawGrid(i, j, false)">
-          <div class="cell-content" [ngStyle]="{ 'background-color': cell.color }">
+          <div class="cell-content" [ngStyle]="{ 'background-color': cell.color }"
+            [ngClass]="{'clicked': cell.isAttacked}">
+            <p *ngIf="cell.hasShip&&cell.isAttacked">1</p>
+            <p *ngIf="!cell.hasShip&&cell.isAttacked">0</p>
           </div>
         </td>
       </tr>

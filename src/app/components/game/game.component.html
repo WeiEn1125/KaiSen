@@ -15,11 +15,13 @@
         <app-ship></app-ship>
     </div>
 
-    <div *ngIf="currentGameState === GameStateEnum.PLAYER1_ATTACK">
-        <app-board [currentGameState]="currentGameState"></app-board>
+    <div class="board-area" *ngIf="currentGameState === GameStateEnum.PLAYER1_ATTACK ">
+        <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
+        <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
     </div>
 
-    <div *ngIf="currentGameState === GameStateEnum.PLAYER2_ATTACK">
-        <app-board [currentGameState]="currentGameState"></app-board>
+    <div class="board-area" *ngIf="currentGameState === GameStateEnum.PLAYER2_ATTACK ">
+        <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
+        <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
     </div>
 </div>

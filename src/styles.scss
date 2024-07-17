@@ -1,6 +1,20 @@
 @import "./app/style/variables";
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-.main-container{
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.main-container {
   @include flex-center-column;
+}
+
+p {
+  margin: 0;
+  padding: 0;
 }

@@ -15,11 +15,15 @@ import { PlayerData } from '../../models/player/player.model';
 })
 export class BoardComponent {
   @Input() currentGameState: string = '';
-  rows: number = 10; // 表格的行数
-  cols: number = 10; // 表格的列数
-  board: Cell[][] = []; // 棋盘，用来存放游戏元素或状态
+  @Input() playerData!: PlayerData;
+  @Input() enemyData!: PlayerData;
+  rows: number = 10;
+  cols: number = 10;
+  board: Cell[][] = [];
   selectedShip: Ship | null = null;
   GameStateEnum = GameStateEnum;
+  canPlaceShip: boolean = true;
+  isAttacking: boolean = false;
 
   constructor(private consoleService: ConsoleService,
     private shipService: ShipService,
@@ -35,41 +39,99 @@ export class BoardComponent {
   }
 
   private initializeBoard() {
-    // 初始化棋盘
-    for (let i = 0; i < this.rows; i++) {
-      this.board[i] = [];
-      for (let j = 0; j < this.cols; j++) {
-        this.board[i][j] = { hasShip: false, color: '#add8e6', isAttacked: false };
+    if (this.playerData != null) {
+      this.board = this.playerData.board;
+    }
+    else if (this.enemyData != null) {
+      this.board = this.enemyData.board;
+    }
+    else {
+      for (let i = 0; i < this.rows; i++) {
+        this.board[i] = [];
+        for (let j = 0; j < this.cols; j++) {
+          this.board[i][j] = { hasShip: false, color: '#add8e6', isAttacked: false };
+        }
       }
     }
-    // 可以根据游戏逻辑进一步填充其他游戏元素
+
   }
 
   cellClicked(row: number, col: number) {
     this.consoleService.log(`Cell clicked: (${row}, ${col})`);
-    if (this.selectedShip) {
-      this.placeSelectedShip(row, col);
+    if (this.currentGameState == GameStateEnum.PLAYER1_ARRANGE || this.currentGameState == GameStateEnum.PLAYER2_ARRANGE) {
+      if (this.selectedShip) {
+        this.placeSelectedShip(row, col);
+      }
+    }
+    else {
+      if (!this.board[row][col].isAttacked && this.enemyData != null && !this.isAttacking) {
+        this.isAttacking = true;
+        this.board[row][col].isAttacked = true;
+        if (!this.board[row][col].hasShip) {
+          this.board[row][col].color = '#0000ff';
+          if (this.currentGameState == GameStateEnum.PLAYER1_ATTACK) {
+            this.playerDataService.updatePlayer2Data(this.board);
+            setTimeout(() => {
+              this.gameStateService.player2Attack();
+            }, 1000);
+          }
+          else if (this.currentGameState == GameStateEnum.PLAYER2_ATTACK) {
+            this.playerDataService.updatePlayer1Data(this.board);
+            setTimeout(() => {
+              this.gameStateService.player1Attack();
+            }, 1000);
+          }
+        }
+        else {
+          this.board[row][col].color = '#ff0000';
+          setTimeout(() => {
+            this.isAttacking = false;
+          }, 1000);
+        }
+      }
     }
   }
 
   drawGrid(row: number, col: number, isEnter: boolean) {
     if (this.selectedShip) {
-      for (let i = 0; i < this.selectedShip.size; i++) {
-        if (this.selectedShip.isHorizontal) {
-          if (i % 2 === 0) {
-            this.updateBoardCell(row, col + (i / 2), isEnter, this.selectedShip.color);
+      if (this.checkCanPlaceShip(row, col)) {
+        this.canPlaceShip = true;
+        for (let i = 0; i < this.selectedShip.size; i++) {
+          if (this.selectedShip.isHorizontal) {
+            if (i % 2 === 0) {
+              this.updateBoardCell(row, col + (i / 2), isEnter, this.selectedShip.color);
+            } else {
+              this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, this.selectedShip.color);
+            }
           } else {
-            this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, this.selectedShip.color);
+            if (i % 2 === 0) {
+              this.updateBoardCell(row + (i / 2), col, isEnter, this.selectedShip.color);
+            } else {
+              this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, this.selectedShip.color);
+            }
           }
-        } else {
-          if (i % 2 === 0) {
-            this.updateBoardCell(row + (i / 2), col, isEnter, this.selectedShip.color);
+        }
+      }
+      else {
+        this.canPlaceShip = false;
+        for (let i = 0; i < this.selectedShip.size; i++) {
+          if (this.selectedShip.isHorizontal) {
+            if (i % 2 === 0) {
+              this.updateBoardCell(row, col + (i / 2), isEnter, '#f08080');
+            } else {
+              this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, '#f08080');
+            }
           } else {
-            this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, this.selectedShip.color);
+            if (i % 2 === 0) {
+              this.updateBoardCell(row + (i / 2), col, isEnter, '#f08080');
+            } else {
+              this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, '#f08080');
+            }
           }
         }
       }
     }
+
   }
 
   updateBoardCell(row: number, col: number, isEnter: boolean, color: string) {
@@ -79,7 +141,7 @@ export class BoardComponent {
   }
 
   placeSelectedShip(row: number, col: number) {
-    if (this.selectedShip && this.canPlaceShip(row, col)) {
+    if (this.selectedShip && this.canPlaceShip) {
       for (let i = 0; i < this.selectedShip.size; i++) {
         if (this.selectedShip.isHorizontal) {
           if (i % 2 === 0) {
@@ -107,7 +169,7 @@ export class BoardComponent {
     }
   }
 
-  canPlaceShip(row: number, col: number): boolean {
+  checkCanPlaceShip(row: number, col: number): boolean {
     for (let i = 0; i < this.selectedShip!.size; i++) {
       if (this.selectedShip!.isHorizontal) {
         if (i % 2 === 0) {

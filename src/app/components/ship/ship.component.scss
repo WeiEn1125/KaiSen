@@ -17,14 +17,15 @@
 
         .ship {
             display: flex;
+            gap: 1px;
         }
         .selected {
             border: 2px solid blue;
         }
         .ship-element {
+            
             width: 30px;
             height: 30px;
-            border: 1px solid #ccc;
             display: inline-block;
             cursor: pointer;
         }
