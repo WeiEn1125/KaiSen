@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ConsoleService } from '../../service/console.service';
 import { Ship } from '../../models/ship/ship.model';
 import { ShipService } from '../../service/ship.service';
@@ -7,6 +7,7 @@ import { GameStateEnum } from '../../models/game-state/game-state.enum';
 import { GameStateService } from '../../service/game-state.service';
 import { PlayerDataService } from '../../player-data.service';
 import { PlayerData } from '../../models/player/player.model';
+import { SocketService } from '../../service/socket.service';
 
 @Component({
   selector: 'app-board',
@@ -17,6 +18,7 @@ export class BoardComponent {
   @Input() currentGameState: string = '';
   @Input() playerData!: PlayerData;
   @Input() enemyData!: PlayerData;
+  @Output() onPlayerDataChanged: EventEmitter<void> = new EventEmitter<void>();
   rows: number = 10;
   cols: number = 10;
   board: Cell[][] = [];
@@ -30,7 +32,8 @@ export class BoardComponent {
   constructor(private consoleService: ConsoleService,
     private shipService: ShipService,
     private playerDataService: PlayerDataService,
-    private gameStateService: GameStateService) {
+    private gameStateService: GameStateService,
+    private socketService: SocketService) {
   }
 
   ngOnInit() {
@@ -40,7 +43,7 @@ export class BoardComponent {
     });
   }
 
-  private initializeBoard() {
+  initializeBoard() {
     if (this.playerData != null) {
       this.title = 'Player';
       this.remainShips = this.playerData.remainShips;
@@ -65,17 +68,21 @@ export class BoardComponent {
         }
       }
     }
+  }
 
+  updateBoard(board: Cell[][], remainShips: number) {
+    this.board = board;
+    this.remainShips = remainShips;
   }
 
   cellClicked(row: number, col: number) {
     this.consoleService.log(`Cell clicked: (${row}, ${col})`);
-    if (this.currentGameState == GameStateEnum.PLAYER1_ARRANGE || this.currentGameState == GameStateEnum.PLAYER2_ARRANGE) {
+    if (this.currentGameState == GameStateEnum.PLAYER1_ARRANGE || this.currentGameState == GameStateEnum.PLAYER2_ARRANGE || this.currentGameState == GameStateEnum.PLAYER_ARRANGE) {
       if (this.selectedShip) {
         this.placeSelectedShip(row, col);
       }
     }
-    else {
+    else if (this.currentGameState == GameStateEnum.PLAYER_ATTACK) {
       this.attack(row, col);
     }
   }
@@ -88,24 +95,33 @@ export class BoardComponent {
       if (!this.board[row][col].hasShip) {
         this.board[row][col].color = '#0000ff80';
         this.enemyData.board[row][col].color = '#0000ff80';
-        if (this.currentGameState == GameStateEnum.PLAYER1_ATTACK) {
-          this.playerDataService.updatePlayer2Data(this.enemyData.board, this.enemyData.remainShips);
+        this.playerDataService.updateEnemyData(this.enemyData.board, this.enemyData.remainShips);
+        this.socketService.sendEnemyData(this.playerDataService.enemyData, true);
+        if (this.currentGameState == GameStateEnum.PLAYER_ATTACK) {
           setTimeout(() => {
-            this.gameStateService.player2Attack();
+            this.gameStateService.waitPlayerAttack();
           }, 1000);
         }
-        else if (this.currentGameState == GameStateEnum.PLAYER2_ATTACK) {
-          this.playerDataService.updatePlayer1Data(this.enemyData.board, this.enemyData.remainShips);
-          setTimeout(() => {
-            this.gameStateService.player1Attack();
-          }, 1000);
-        }
+        // if (this.currentGameState == GameStateEnum.PLAYER1_ATTACK) {
+        //   this.playerDataService.updatePlayer2Data(this.enemyData.board, this.enemyData.remainShips);
+        //   setTimeout(() => {
+        //     this.gameStateService.player2Attack();
+        //   }, 1000);
+        // }
+        // else if (this.currentGameState == GameStateEnum.PLAYER2_ATTACK) {
+        //   this.playerDataService.updatePlayer1Data(this.enemyData.board, this.enemyData.remainShips);
+        //   setTimeout(() => {
+        //     this.gameStateService.player1Attack();
+        //   }, 1000);
+        // }
       }
       else {
         this.board[row][col].color = '#ff000080';
         this.enemyData.board[row][col].color = '#ff000080';
         this.enemyData.remainShips--;
-        this.remainShips--;
+        this.remainShips = this.enemyData.remainShips;
+        this.playerDataService.updateEnemyData(this.enemyData.board, this.enemyData.remainShips);
+        this.socketService.sendEnemyData(this.playerDataService.enemyData, false);
         setTimeout(() => {
           this.isAttacking = false;
         }, 1000);
@@ -229,13 +245,16 @@ export class BoardComponent {
       board: this.board,
       remainShips: 15
     };
-    if (this.currentGameState === this.gameStateService.GameStateEnum.PLAYER1_ARRANGE) {
-      this.playerDataService.setPlayer1Data(data);
-      this.gameStateService.player2Arrange();
-    } else if (this.currentGameState === this.gameStateService.GameStateEnum.PLAYER2_ARRANGE) {
-      this.playerDataService.setPlayer2Data(data);
-      this.gameStateService.player1Attack();
-    }
+    this.playerDataService.setPlayerData(data);
+    this.socketService.connect();
+    this.gameStateService.waitPlayerArrange();
+    // if (this.currentGameState === this.gameStateService.GameStateEnum.PLAYER1_ARRANGE) {
+    //   this.playerDataService.setPlayer1Data(data);
+    //   this.gameStateService.player2Arrange();
+    // } else if (this.currentGameState === this.gameStateService.GameStateEnum.PLAYER2_ARRANGE) {
+    //   this.playerDataService.setPlayer2Data(data);
+    //   this.gameStateService.player1Attack();
+    // }
   }
 
   checkCanConfirmShipArrangement(): boolean {

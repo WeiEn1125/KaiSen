@@ -8,7 +8,9 @@ import { gameReducer } from './store/game-state/game.reducer';
 import { BoardComponent } from './components/board/board.component';
 import { ShipComponent } from './components/ship/ship.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-import { FormsModule } from '@angular/forms';  
+import { FormsModule } from '@angular/forms';
+import { StartMenuComponent } from './components/start-menu/start-menu.component';
+import { GameMenuComponent } from './components/game-menu/game-menu.component';  
 
 const config: SocketIoConfig = { url: 'http://localhost:3000', options: { autoConnect: false } };
 @NgModule({
@@ -16,7 +18,9 @@ const config: SocketIoConfig = { url: 'http://localhost:3000', options: { autoCo
     AppComponent,
     GameComponent,
     BoardComponent,
-    ShipComponent
+    ShipComponent,
+    StartMenuComponent,
+    GameMenuComponent
   ],
   imports: [
     BrowserModule,

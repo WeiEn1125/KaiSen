@@ -1,8 +1,10 @@
 <div class="board">
   <div class="board-area">
-    <h3 *ngIf="currentGameState === GameStateEnum.PLAYER1_ATTACK || currentGameState === GameStateEnum.PLAYER2_ATTACK">
+    <h3
+      *ngIf="currentGameState === GameStateEnum.PLAYER1_ATTACK || currentGameState === GameStateEnum.PLAYER2_ATTACK || currentGameState === GameStateEnum.PLAYER_ATTACK  || currentGameState === GameStateEnum.WAIT_PLAYER_ATTACK">
       {{title}}</h3>
-    <h3 *ngIf="currentGameState === GameStateEnum.PLAYER1_ATTACK || currentGameState === GameStateEnum.PLAYER2_ATTACK">
+    <h3
+      *ngIf="currentGameState === GameStateEnum.PLAYER1_ATTACK || currentGameState === GameStateEnum.PLAYER2_ATTACK|| currentGameState === GameStateEnum.PLAYER_ATTACK  || currentGameState === GameStateEnum.WAIT_PLAYER_ATTACK">
       {{remainShips}}</h3>
     <div class="row" *ngFor="let row of board; let i = index">
       <div *ngFor="let cell of row; let j = index" class="cell" (click)="cellClicked(i, j)"
@@ -15,7 +17,8 @@
       </div>
     </div>
   </div>
-  <div *ngIf="currentGameState === GameStateEnum.PLAYER1_ARRANGE || currentGameState === GameStateEnum.PLAYER2_ARRANGE">
+  <div
+    *ngIf="currentGameState === GameStateEnum.PLAYER1_ARRANGE || currentGameState === GameStateEnum.PLAYER2_ARRANGE || currentGameState === GameStateEnum.PLAYER_ARRANGE">
     <button (click)="resetBoard()">Reset</button>
     <button [disabled]="!checkCanConfirmShipArrangement()" (click)="confirmShipArrangement()">Submit</button>
   </div>
