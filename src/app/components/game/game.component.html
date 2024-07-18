@@ -1,10 +1,10 @@
 <div class="main-container">
     <h2>Game Status: {{ gameState$ | async }}</h2>
-    <button (click)="player1Arrange()">Player1 Arrange</button>
-    <button (click)="player2Arrange()">Player2 Arrange</button>
+    <button *ngIf="currentGameState === GameStateEnum.GAME_START" (click)="player1Arrange()">Start Game</button>
+    <!-- <button (click)="player2Arrange()">Player2 Arrange</button>
     <button (click)="player1Attack()">Player1 Attack</button>
     <button (click)="player2Attack()">Player2 Attack</button>
-    <button (click)="gameEnd()">Game end</button>
+    <button (click)="gameEnd()">Game end</button> -->
     <div *ngIf="currentGameState === GameStateEnum.PLAYER1_ARRANGE">
         <app-board [currentGameState]="currentGameState"></app-board>
         <app-ship></app-ship>

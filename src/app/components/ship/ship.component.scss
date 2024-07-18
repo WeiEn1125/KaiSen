@@ -14,20 +14,20 @@
     .ship-area {
         @include flex-center-row;
         gap: 50px;
-
         .ship {
             display: flex;
-            gap: 1px;
         }
+
         .selected {
             border: 2px solid blue;
         }
+
         .ship-element {
-            
             width: 30px;
             height: 30px;
             display: inline-block;
             cursor: pointer;
+            border: 0.5px solid #ccc;
         }
     }
 }

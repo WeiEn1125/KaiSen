@@ -1,6 +1,7 @@
 import { ApplicationRef, inject, Injectable } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { first, Observable } from 'rxjs';
+import { Cell } from '../models/board/board.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,9 +30,12 @@ export class SocketService {
     return this.socket.fromEvent<string>('connectionRefused');
   }
 
+  getBoardData(): Observable<Cell[][]> {
+    return this.socket.fromEvent<Cell[][]>('boardData');
+  }
+
   disConnect(){
     this.socket.disconnect();
   }
-
 
 }

@@ -24,6 +24,8 @@ export class BoardComponent {
   GameStateEnum = GameStateEnum;
   canPlaceShip: boolean = true;
   isAttacking: boolean = false;
+  title: string = '';
+  remainShips: number = 0;
 
   constructor(private consoleService: ConsoleService,
     private shipService: ShipService,
@@ -40,16 +42,26 @@ export class BoardComponent {
 
   private initializeBoard() {
     if (this.playerData != null) {
+      this.title = 'Player';
+      this.remainShips = this.playerData.remainShips;
       this.board = this.playerData.board;
     }
     else if (this.enemyData != null) {
-      this.board = this.enemyData.board;
+      this.title = 'Enemy';
+      this.remainShips = this.enemyData.remainShips;
+      let enemyBoardData = this.enemyData.board;
+      for (let i = 0; i < this.rows; i++) {
+        this.board[i] = [];
+        for (let j = 0; j < this.cols; j++) {
+          this.board[i][j] = { hasShip: enemyBoardData[i][j].hasShip, color: enemyBoardData[i][j].isAttacked ? enemyBoardData[i][j].color : '#ffffff', isAttacked: enemyBoardData[i][j].isAttacked };
+        }
+      }
     }
     else {
       for (let i = 0; i < this.rows; i++) {
         this.board[i] = [];
         for (let j = 0; j < this.cols; j++) {
-          this.board[i][j] = { hasShip: false, color: '#add8e6', isAttacked: false };
+          this.board[i][j] = { hasShip: false, color: '#ffffff', isAttacked: false };
         }
       }
     }
@@ -64,30 +76,39 @@ export class BoardComponent {
       }
     }
     else {
-      if (!this.board[row][col].isAttacked && this.enemyData != null && !this.isAttacking) {
-        this.isAttacking = true;
-        this.board[row][col].isAttacked = true;
-        if (!this.board[row][col].hasShip) {
-          this.board[row][col].color = '#0000ff';
-          if (this.currentGameState == GameStateEnum.PLAYER1_ATTACK) {
-            this.playerDataService.updatePlayer2Data(this.board);
-            setTimeout(() => {
-              this.gameStateService.player2Attack();
-            }, 1000);
-          }
-          else if (this.currentGameState == GameStateEnum.PLAYER2_ATTACK) {
-            this.playerDataService.updatePlayer1Data(this.board);
-            setTimeout(() => {
-              this.gameStateService.player1Attack();
-            }, 1000);
-          }
-        }
-        else {
-          this.board[row][col].color = '#ff0000';
+      this.attack(row, col);
+    }
+  }
+
+  attack(row: number, col: number) {
+    if (!this.board[row][col].isAttacked && this.enemyData != null && !this.isAttacking) {
+      this.isAttacking = true;
+      this.board[row][col].isAttacked = true;
+      this.enemyData.board[row][col].isAttacked = true;
+      if (!this.board[row][col].hasShip) {
+        this.board[row][col].color = '#0000ff80';
+        this.enemyData.board[row][col].color = '#0000ff80';
+        if (this.currentGameState == GameStateEnum.PLAYER1_ATTACK) {
+          this.playerDataService.updatePlayer2Data(this.enemyData.board, this.enemyData.remainShips);
           setTimeout(() => {
-            this.isAttacking = false;
+            this.gameStateService.player2Attack();
           }, 1000);
         }
+        else if (this.currentGameState == GameStateEnum.PLAYER2_ATTACK) {
+          this.playerDataService.updatePlayer1Data(this.enemyData.board, this.enemyData.remainShips);
+          setTimeout(() => {
+            this.gameStateService.player1Attack();
+          }, 1000);
+        }
+      }
+      else {
+        this.board[row][col].color = '#ff000080';
+        this.enemyData.board[row][col].color = '#ff000080';
+        this.enemyData.remainShips--;
+        this.remainShips--;
+        setTimeout(() => {
+          this.isAttacking = false;
+        }, 1000);
       }
     }
   }
@@ -136,7 +157,7 @@ export class BoardComponent {
 
   updateBoardCell(row: number, col: number, isEnter: boolean, color: string) {
     if (this.board[row] && this.board[row][col] && !this.board[row][col].hasShip) {
-      this.board[row][col].color = isEnter ? color : '#add8e6';
+      this.board[row][col].color = isEnter ? color : '#ffffff';
     }
   }
 
@@ -198,14 +219,15 @@ export class BoardComponent {
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
         this.board[i][j].hasShip = false;
-        this.board[i][j].color = '#add8e6';
+        this.board[i][j].color = '#ffffff';
       }
     }
   }
 
   confirmShipArrangement() {
     let data: PlayerData = {
-      board: this.board
+      board: this.board,
+      remainShips: 15
     };
     if (this.currentGameState === this.gameStateService.GameStateEnum.PLAYER1_ARRANGE) {
       this.playerDataService.setPlayer1Data(data);

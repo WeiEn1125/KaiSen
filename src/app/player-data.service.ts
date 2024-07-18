@@ -13,18 +13,19 @@ export class PlayerDataService {
 
   setPlayer1Data(data: PlayerData) {
     this.player1Data = data;
-    this.consoleService.log(this.player1Data);
   }
   setPlayer2Data(data: PlayerData) {
     this.player2Data = data;
-    this.consoleService.log(this.player2Data);
   }
 
-  updatePlayer1Data(board: Cell[][]) {
+  updatePlayer1Data(board: Cell[][], shipCount: number) {
     this.player1Data.board = board;
+    this.player1Data.remainShips = shipCount;
   }
-  
-  updatePlayer2Data(board: Cell[][]) {
+
+  updatePlayer2Data(board: Cell[][], shipCount: number) {
     this.player2Data.board = board;
+    this.player2Data.remainShips = shipCount;
+
   }
 }
