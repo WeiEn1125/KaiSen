@@ -44,6 +44,9 @@ export class GameComponent implements OnInit, OnDestroy {
         this.currentGameState = state;
         this.consoleService.log('[Game State]', state);
         switch (state) {
+          case GameStateEnum.PLAYER_ARRANGE:
+            this.isFirst = false;
+            break;
           case GameStateEnum.PLAYER_ATTACK:
           case GameStateEnum.WAIT_PLAYER_ATTACK:
             this.currentPlayerData = this.playerDataService.playerData;
