@@ -8,6 +8,7 @@ body {
 
 .main-container {
   @include flex-center-column;
+  margin: 50px;
 }
 
 p {

@@ -21,11 +21,10 @@ export class GameComponent {
   message: string = '';
   messages: string[] = [];
   userCount: number = 0;
-  alertMsg: string = '';
   isFirst: boolean = false;
-
   @ViewChild(BoardComponent) boardComponent !: BoardComponent;
-  constructor(private gameStateService: GameStateService, private playerDataService: PlayerDataService, private socketService: SocketService, private cdr: ChangeDetectorRef, private ngZone: NgZone, private playerService: PlayerDataService) { }
+
+  constructor(private gameStateService: GameStateService, private playerDataService: PlayerDataService, private socketService: SocketService, private ngZone: NgZone, private playerService: PlayerDataService) { }
 
   ngOnInit() {
     this.gameStateService.init();
@@ -40,20 +39,19 @@ export class GameComponent {
           case GameStateEnum.WAIT_PLAYER_ATTACK:
             this.currentPlayerData = this.playerDataService.playerData;
             break;
-          // case GameStateEnum.PLAYER1_ATTACK:
-          //   this.currentPlayerData = this.playerDataService.player1Data;
-          //   this.enemyPlayerData = this.playerDataService.player2Data;
-          //   break;
-          // case GameStateEnum.PLAYER2_ATTACK:
-          //   this.currentPlayerData = this.playerDataService.player2Data;
-          //   this.enemyPlayerData = this.playerDataService.player1Data;
-          //   break;
         }
       })
     ).subscribe();
     this.socketService.getMessage().subscribe((message: string) => {
       this.ngZone.run(() => {
         this.messages.push(message);
+      });
+    });
+
+    this.socketService.getConnectionRefused().subscribe((msg: string) => {
+      this.ngZone.run(() => {
+        this.gameStateService.playerArrange();
+        alert(msg);
       });
     });
 
@@ -65,12 +63,6 @@ export class GameComponent {
         if (count == 2) {
           this.socketService.sendPlayerData(this.playerDataService.playerData);
         }
-      });
-    });
-
-    this.socketService.getConnectionRefused().subscribe((alert: string) => {
-      this.ngZone.run(() => {
-        this.alertMsg = alert;
       });
     });
 
@@ -95,14 +87,17 @@ export class GameComponent {
           this.gameStateService.playerAttack();
       });
     });
+
+    this.socketService.getUserLeave().subscribe((userLeave: boolean) => {
+      this.ngZone.run(() => {
+        if (userLeave) {
+          this.socketService.disConnect();
+          alert('Your enemy leave the room!!');
+          this.gameStateService.playerArrange();
+        }
+      });
+    })
   }
-
-  sendMessage() {
-    this.socketService.sendMessage(this.message);
-    this.message = '';
-  }
-
-
   ngOnDestroy() {
     this.socketService.disConnect();
   }
@@ -111,20 +106,9 @@ export class GameComponent {
     this.gameStateService.playerArrange();
   }
 
-  player1Arrange(): void {
-    this.gameStateService.player1Arrange();
-  }
-
-  player2Arrange(): void {
-    this.gameStateService.player2Arrange();
-  }
-
-  player1Attack(): void {
-    this.gameStateService.player1Attack();
-  }
-
-  player2Attack(): void {
-    this.gameStateService.player2Attack();
+  leaveRoom(): void {
+    this.socketService.disConnect();
+    this.gameStateService.playerArrange();
   }
 
   gameEnd(): void {

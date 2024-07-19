@@ -76,8 +76,7 @@ export class BoardComponent {
   }
 
   cellClicked(row: number, col: number) {
-    this.consoleService.log(`Cell clicked: (${row}, ${col})`);
-    if (this.currentGameState == GameStateEnum.PLAYER1_ARRANGE || this.currentGameState == GameStateEnum.PLAYER2_ARRANGE || this.currentGameState == GameStateEnum.PLAYER_ARRANGE) {
+    if (this.currentGameState == GameStateEnum.PLAYER_ARRANGE) {
       if (this.selectedShip) {
         this.placeSelectedShip(row, col);
       }
@@ -102,18 +101,6 @@ export class BoardComponent {
             this.gameStateService.waitPlayerAttack();
           }, 1000);
         }
-        // if (this.currentGameState == GameStateEnum.PLAYER1_ATTACK) {
-        //   this.playerDataService.updatePlayer2Data(this.enemyData.board, this.enemyData.remainShips);
-        //   setTimeout(() => {
-        //     this.gameStateService.player2Attack();
-        //   }, 1000);
-        // }
-        // else if (this.currentGameState == GameStateEnum.PLAYER2_ATTACK) {
-        //   this.playerDataService.updatePlayer1Data(this.enemyData.board, this.enemyData.remainShips);
-        //   setTimeout(() => {
-        //     this.gameStateService.player1Attack();
-        //   }, 1000);
-        // }
       }
       else {
         this.board[row][col].color = '#ff000080';
@@ -247,14 +234,6 @@ export class BoardComponent {
     };
     this.playerDataService.setPlayerData(data);
     this.socketService.connect();
-    this.gameStateService.waitPlayerArrange();
-    // if (this.currentGameState === this.gameStateService.GameStateEnum.PLAYER1_ARRANGE) {
-    //   this.playerDataService.setPlayer1Data(data);
-    //   this.gameStateService.player2Arrange();
-    // } else if (this.currentGameState === this.gameStateService.GameStateEnum.PLAYER2_ARRANGE) {
-    //   this.playerDataService.setPlayer2Data(data);
-    //   this.gameStateService.player1Attack();
-    // }
   }
 
   checkCanConfirmShipArrangement(): boolean {

@@ -27,12 +27,10 @@ io.on('connection', (socket) => {
   console.log(`A user connected. Total users: ${connectedUsers}`);
 
   socket.on('playerData', (playerData) => {
-    console.log('playerData: ' + playerData);
     socket.broadcast.emit('playerData', playerData);
   });
 
   socket.on('enemyData', (data) => {
-    console.log('enemyData: ' + data);
     socket.broadcast.emit('enemyData', data);
   });
 
@@ -47,8 +45,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     connectedUsers--;
     console.log(`A user disconnected. Total users: ${connectedUsers}`);
-
-    // 通知所有客戶端當前連接人數
+    io.emit('userLeave', true);
     io.emit('userCount', connectedUsers);
   });
 });

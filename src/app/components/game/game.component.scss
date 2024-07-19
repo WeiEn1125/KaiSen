@@ -1,6 +1,22 @@
 @import "../../style/variables";
 
-.board-area{
+.start-area {
+    @include flex-center-column;
+    gap: 10px;
+}
+
+.board-area {
     @include flex-center-row;
     gap: 80px;
+}
+
+.waiting-container {
+    @include flex-center-column;
+    gap: 10px;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
 }

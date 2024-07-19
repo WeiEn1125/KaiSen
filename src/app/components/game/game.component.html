@@ -1,34 +1,43 @@
 <div class="main-container">
-    <h2>Game Status: {{ gameState$ | async }}</h2>
-    <!-- <app-start-menu></app-start-menu> -->
-    <button *ngIf="currentGameState === GameStateEnum.GAME_START" (click)="playerArrange()">Start Game</button>
-    <!-- <button (click)="player2Arrange()">Player2 Arrange</button>
-    <button (click)="player1Attack()">Player1 Attack</button>
-    <button (click)="player2Attack()">Player2 Attack</button>
-    <button (click)="gameEnd()">Game end</button> -->
-
+    <div class="start-area" *ngIf="currentGameState === GameStateEnum.GAME_START">
+        <p class="title">海戦ゲーム</p>
+        <button *ngIf="currentGameState === GameStateEnum.GAME_START" (click)="playerArrange()">Start Game</button>
+    </div>
 
     <div *ngIf="currentGameState === GameStateEnum.PLAYER_ARRANGE">
+        <p class="title"> Arrange your ship!</p>
         <app-board [currentGameState]="currentGameState"></app-board>
         <app-ship></app-ship>
     </div>
 
     <div *ngIf="currentGameState === GameStateEnum.WAIT_PLAYER_ARRANGE">
-        <p>Wati player joining...</p>
-        <p>{{userCount}}</p>
+        <div class="waiting-container">
+            <p class="title">Waiting room</p>
+            <p>Waiting for player joining...</p>
+            <p>Current user count: {{userCount}}</p>
+            <button (click)="leaveRoom()">Leave room</button>
+        </div>
     </div>
 
-    <div class="board-area" *ngIf="currentGameState === GameStateEnum.PLAYER_ATTACK">
-        <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
-        <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
+    <div *ngIf="currentGameState === GameStateEnum.PLAYER_ATTACK">
+        <p class="title">Your turn!</p>
+        <div class="board-area">
+            <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
+            <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
+        </div>
     </div>
 
 
-    <div class="board-area" *ngIf="currentGameState === GameStateEnum.WAIT_PLAYER_ATTACK">
-        <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
-        <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
+    <div *ngIf="currentGameState === GameStateEnum.WAIT_PLAYER_ATTACK">
+        <p class="title">Waiting for enemy attack!</p>
+        <div class="board-area">
+            <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
+            <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
+        </div>
     </div>
 
+
+    <!-- 
     <div *ngIf="currentGameState === GameStateEnum.PLAYER1_ARRANGE">
         <app-board [currentGameState]="currentGameState"></app-board>
         <app-ship></app-ship>
@@ -47,5 +56,5 @@
     <div class="board-area" *ngIf="currentGameState === GameStateEnum.PLAYER2_ATTACK ">
         <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
         <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
-    </div>
+    </div> -->
 </div>
