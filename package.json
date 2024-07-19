@@ -8,7 +8,7 @@
     "test": "ng test",
     "serve:ssr:kaisen": "node dist/kaisen/server/server.mjs",
     "start-server": "node server/server.js",
-    "start-client": "ng serve",
+    "start-client": "ng serve -o",
     "start": "concurrently \"npm run start-server\" \"npm run start-client\""
   },
   "private": true,
