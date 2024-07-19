@@ -4,6 +4,7 @@ import { first, Observable } from 'rxjs';
 import { PlayerData } from '../models/player/player.model';
 import { GameStateService } from './game-state.service';
 import { ConsoleService } from './console.service';
+import { GameStateEnum } from '../models/game-state/game-state.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,9 @@ export class SocketService {
       this.consoleService.log('[Socket] Successfully connected to the server');
     });
     this.socket.on('connect_error', (error: any) => {
-      this.disConnect(false);
-      alert('Failed to connect to the server. Please try again later.');
+      this.disConnect();
       this.consoleService.error('[Socket] Connection error:', error);
+      alert('Failed to connect to the server. Please try again later.');
     });
 
     this.socket.on('disconnect', (reason: any) => {
@@ -58,7 +59,6 @@ export class SocketService {
     return this.socket.fromEvent<boolean>('userLeave');
   }
 
-
   getEnemyData(): Observable<{ enemyData: PlayerData, shouldChange: boolean }> {
     return this.socket.fromEvent<{ enemyData: PlayerData, shouldChange: boolean }>('enemyData');
   }
@@ -71,8 +71,8 @@ export class SocketService {
     this.socket.emit('enemyData', { enemyData, shouldChange });
   }
 
-  disConnect(isGame: boolean) {
-    this.socket.disconnect(isGame);
+  disConnect() {
+    this.socket.disconnect();
   }
 
 }

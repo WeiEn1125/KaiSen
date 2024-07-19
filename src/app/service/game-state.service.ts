@@ -5,15 +5,14 @@ import { playerArrange, waitPlayerArrange, waitPlayerAttack, playerAttack, gameS
 import { selectGameStatus } from '../store/game-state/game.selector';
 import { AppState } from '../app.state';
 import { GameStateEnum } from '../models/game-state/game-state.enum';
-import { ConsoleService } from './console.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameStateService {
   gameState$!: Observable<string>;
-  GameStateEnum = GameStateEnum;
-  constructor(private store: Store<AppState>, private consoleService: ConsoleService) { }
+
+  constructor(private store: Store<AppState>) { }
 
   init() {
     this.gameState$ = this.store.select(selectGameStatus);

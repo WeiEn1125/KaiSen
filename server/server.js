@@ -42,10 +42,10 @@ io.on('connection', (socket) => {
   });
 
 
-  socket.on('disconnect', (isGame) => {
+  socket.on('disconnect', () => {
     connectedUsers--;
     console.log(`A user disconnected. Total users: ${connectedUsers}`);
-    io.emit('userLeave', !isGame);
+    io.emit('userLeave', true);
     io.emit('userCount', connectedUsers);
   });
 });

@@ -19,21 +19,22 @@
         </div>
     </div>
 
-    <div *ngIf="currentGameState === GameStateEnum.PLAYER_ATTACK">
+    <div class="game-area" *ngIf="currentGameState === GameStateEnum.PLAYER_ATTACK">
         <p class="title">Your turn!</p>
         <div class="board-area">
             <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
             <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
         </div>
+        <button (click)="leaveRoom()">Leave room</button>
     </div>
 
-
-    <div *ngIf="currentGameState === GameStateEnum.WAIT_PLAYER_ATTACK">
+    <div class="game-area" *ngIf="currentGameState === GameStateEnum.WAIT_PLAYER_ATTACK">
         <p class="title">Waiting for enemy attack!</p>
         <div class="board-area">
             <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
             <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
         </div>
+        <button (click)="leaveRoom()">Leave room</button>
     </div>
 
     <div class="menu" *ngIf="currentGameState === GameStateEnum.GAME_WIN">
@@ -45,5 +46,5 @@
         <p class="title">You lose!</p>
         <button (click)="restart()">Restart</button>
     </div>
- 
+
 </div>

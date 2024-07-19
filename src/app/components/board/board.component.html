@@ -19,6 +19,6 @@
   </div>
   <div *ngIf=" currentGameState === GameStateEnum.PLAYER_ARRANGE">
     <button (click)="resetBoard()">Reset</button>
-    <button [disabled]="!checkCanConfirmShipArrangement()" (click)="confirmShipArrangement()">Submit</button>
+    <button [disabled]="!checkCanConfirmShipArrangement()" (click)="confirmShipArrangement()">Go</button>
   </div>
 </div>

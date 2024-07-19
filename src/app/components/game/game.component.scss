@@ -10,6 +10,11 @@
     gap: 80px;
 }
 
+.game-area {
+    @include flex-center-column;
+    gap: 10px;
+}
+
 .waiting-container {
     @include flex-center-column;
     gap: 10px;

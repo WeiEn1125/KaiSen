@@ -162,7 +162,7 @@ export class BoardComponent {
         }
       }
     }
-    else if (this.currentGameState === GameStateEnum.PLAYER_ATTACK) {
+    else if (this.currentGameState === GameStateEnum.PLAYER_ATTACK && this.enemyData != null) {
       this.updateBoardCell(row, col, isEnter, '#ffff00bf', false);
     }
   }
