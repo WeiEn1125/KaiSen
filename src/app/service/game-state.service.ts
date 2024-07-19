@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { player1Arrange, player2Arrange, player1Attack, player2Attack, gameEnd, playerArrange, waitPlayerArrange, waitPlayerAttack, playerAttack } from '../store/game-state/game.action';
+import { playerArrange, waitPlayerArrange, waitPlayerAttack, playerAttack, gameStart, gameWin, gameLose } from '../store/game-state/game.action';
 import { selectGameStatus } from '../store/game-state/game.selector';
 import { AppState } from '../app.state';
 import { GameStateEnum } from '../models/game-state/game-state.enum';
+import { ConsoleService } from './console.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +13,11 @@ import { GameStateEnum } from '../models/game-state/game-state.enum';
 export class GameStateService {
   gameState$!: Observable<string>;
   GameStateEnum = GameStateEnum;
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private consoleService: ConsoleService) { }
 
   init() {
     this.gameState$ = this.store.select(selectGameStatus);
   }
-
 
   playerArrange(): void {
     this.store.dispatch(playerArrange());
@@ -35,23 +35,15 @@ export class GameStateService {
     this.store.dispatch(waitPlayerAttack());
   }
 
-  player1Arrange(): void {
-    this.store.dispatch(player1Arrange());
+  gameWin(): void {
+    this.store.dispatch(gameWin());
   }
 
-  player2Arrange(): void {
-    this.store.dispatch(player2Arrange());
+  gameLose(): void {
+    this.store.dispatch(gameLose());
   }
 
-  player1Attack(): void {
-    this.store.dispatch(player1Attack());
-  }
-
-  player2Attack(): void {
-    this.store.dispatch(player2Attack());
-  }
-
-  gameEnd(): void {
-    this.store.dispatch(gameEnd());
+  gameStart(): void {
+    this.store.dispatch(gameStart());
   }
 }

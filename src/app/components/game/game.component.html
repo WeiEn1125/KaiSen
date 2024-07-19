@@ -1,5 +1,5 @@
 <div class="main-container">
-    <div class="start-area" *ngIf="currentGameState === GameStateEnum.GAME_START">
+    <div class="menu" *ngIf="currentGameState === GameStateEnum.GAME_START">
         <p class="title">海戦ゲーム</p>
         <button *ngIf="currentGameState === GameStateEnum.GAME_START" (click)="playerArrange()">Start Game</button>
     </div>
@@ -36,25 +36,14 @@
         </div>
     </div>
 
-
-    <!-- 
-    <div *ngIf="currentGameState === GameStateEnum.PLAYER1_ARRANGE">
-        <app-board [currentGameState]="currentGameState"></app-board>
-        <app-ship></app-ship>
+    <div class="menu" *ngIf="currentGameState === GameStateEnum.GAME_WIN">
+        <p class="title">You win!</p>
+        <button (click)="restart()">Restart</button>
     </div>
 
-    <div *ngIf="currentGameState === GameStateEnum.PLAYER2_ARRANGE">
-        <app-board [currentGameState]="currentGameState"></app-board>
-        <app-ship></app-ship>
+    <div class="menu" *ngIf="currentGameState === GameStateEnum.GAME_LOSE">
+        <p class="title">You lose!</p>
+        <button (click)="restart()">Restart</button>
     </div>
-
-    <div class="board-area" *ngIf="currentGameState === GameStateEnum.PLAYER1_ATTACK ">
-        <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
-        <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
-    </div>
-
-    <div class="board-area" *ngIf="currentGameState === GameStateEnum.PLAYER2_ATTACK ">
-        <app-board [currentGameState]="currentGameState" [playerData]="currentPlayerData"></app-board>
-        <app-board [currentGameState]="currentGameState" [enemyData]="enemyPlayerData"></app-board>
-    </div> -->
+ 
 </div>

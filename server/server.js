@@ -4,7 +4,7 @@ const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(http, {
   cors: {
-    origin: ['http://localhost:4200']
+    origin: ['http://localhost:4200','http://192.168.1.152:4200']
   }
 });
 
@@ -42,10 +42,10 @@ io.on('connection', (socket) => {
   });
 
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', (isGame) => {
     connectedUsers--;
     console.log(`A user disconnected. Total users: ${connectedUsers}`);
-    io.emit('userLeave', true);
+    io.emit('userLeave', !isGame);
     io.emit('userCount', connectedUsers);
   });
 });

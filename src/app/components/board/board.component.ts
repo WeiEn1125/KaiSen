@@ -73,6 +73,8 @@ export class BoardComponent {
   updateBoard(board: Cell[][], remainShips: number) {
     this.board = board;
     this.remainShips = remainShips;
+    if (this.remainShips == 0)
+      this.gameStateService.gameLose();
   }
 
   cellClicked(row: number, col: number) {
@@ -91,76 +93,90 @@ export class BoardComponent {
       this.isAttacking = true;
       this.board[row][col].isAttacked = true;
       this.enemyData.board[row][col].isAttacked = true;
+      this.playerDataService.updateEnemyData(this.enemyData.board, this.enemyData.remainShips);
       if (!this.board[row][col].hasShip) {
         this.board[row][col].color = '#0000ff80';
         this.enemyData.board[row][col].color = '#0000ff80';
-        this.playerDataService.updateEnemyData(this.enemyData.board, this.enemyData.remainShips);
         this.socketService.sendEnemyData(this.playerDataService.enemyData, true);
-        if (this.currentGameState == GameStateEnum.PLAYER_ATTACK) {
-          setTimeout(() => {
-            this.gameStateService.waitPlayerAttack();
-          }, 1000);
-        }
+        this.gameStateService.waitPlayerAttack();
+        // if (this.currentGameState == GameStateEnum.PLAYER_ATTACK) {
+        //   setTimeout(() => {
+        //     this.gameStateService.waitPlayerAttack();
+        //   }, 1000);
+        // }
       }
       else {
         this.board[row][col].color = '#ff000080';
         this.enemyData.board[row][col].color = '#ff000080';
         this.enemyData.remainShips--;
         this.remainShips = this.enemyData.remainShips;
-        this.playerDataService.updateEnemyData(this.enemyData.board, this.enemyData.remainShips);
         this.socketService.sendEnemyData(this.playerDataService.enemyData, false);
-        setTimeout(() => {
-          this.isAttacking = false;
-        }, 1000);
+        this.isAttacking = false;
+        if (this.remainShips == 0)
+          this.gameStateService.gameWin();
+        // setTimeout(() => {
+        //   this.isAttacking = false;
+        // }, 1000);
       }
     }
   }
 
   drawGrid(row: number, col: number, isEnter: boolean) {
-    if (this.selectedShip) {
-      if (this.checkCanPlaceShip(row, col)) {
-        this.canPlaceShip = true;
-        for (let i = 0; i < this.selectedShip.size; i++) {
-          if (this.selectedShip.isHorizontal) {
-            if (i % 2 === 0) {
-              this.updateBoardCell(row, col + (i / 2), isEnter, this.selectedShip.color);
+    if (this.currentGameState === GameStateEnum.PLAYER_ARRANGE) {
+      if (this.selectedShip) {
+        if (this.checkCanPlaceShip(row, col)) {
+          this.canPlaceShip = true;
+          for (let i = 0; i < this.selectedShip.size; i++) {
+            if (this.selectedShip.isHorizontal) {
+              if (i % 2 === 0) {
+                this.updateBoardCell(row, col + (i / 2), isEnter, this.selectedShip.color, true);
+              } else {
+                this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, this.selectedShip.color, true);
+              }
             } else {
-              this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, this.selectedShip.color);
-            }
-          } else {
-            if (i % 2 === 0) {
-              this.updateBoardCell(row + (i / 2), col, isEnter, this.selectedShip.color);
-            } else {
-              this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, this.selectedShip.color);
+              if (i % 2 === 0) {
+                this.updateBoardCell(row + (i / 2), col, isEnter, this.selectedShip.color, true);
+              } else {
+                this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, this.selectedShip.color, true);
+              }
             }
           }
         }
-      }
-      else {
-        this.canPlaceShip = false;
-        for (let i = 0; i < this.selectedShip.size; i++) {
-          if (this.selectedShip.isHorizontal) {
-            if (i % 2 === 0) {
-              this.updateBoardCell(row, col + (i / 2), isEnter, '#f08080');
+        else {
+          this.canPlaceShip = false;
+          for (let i = 0; i < this.selectedShip.size; i++) {
+            if (this.selectedShip.isHorizontal) {
+              if (i % 2 === 0) {
+                this.updateBoardCell(row, col + (i / 2), isEnter, '#f08080', true);
+              } else {
+                this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, '#f08080', true);
+              }
             } else {
-              this.updateBoardCell(row, col - Math.ceil(i / 2), isEnter, '#f08080');
-            }
-          } else {
-            if (i % 2 === 0) {
-              this.updateBoardCell(row + (i / 2), col, isEnter, '#f08080');
-            } else {
-              this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, '#f08080');
+              if (i % 2 === 0) {
+                this.updateBoardCell(row + (i / 2), col, isEnter, '#f08080', true);
+              } else {
+                this.updateBoardCell(row - Math.ceil(i / 2), col, isEnter, '#f08080', true);
+              }
             }
           }
         }
       }
     }
-
+    else if (this.currentGameState === GameStateEnum.PLAYER_ATTACK) {
+      this.updateBoardCell(row, col, isEnter, '#ffff00bf', false);
+    }
   }
 
-  updateBoardCell(row: number, col: number, isEnter: boolean, color: string) {
-    if (this.board[row] && this.board[row][col] && !this.board[row][col].hasShip) {
-      this.board[row][col].color = isEnter ? color : '#ffffff';
+  updateBoardCell(row: number, col: number, isEnter: boolean, color: string, isArrange: boolean) {
+    if ((this.board[row] && this.board[row][col])) {
+      if (isArrange) {
+        if (!this.board[row][col].hasShip)
+          this.board[row][col].color = isEnter ? color : '#ffffff';
+      }
+      else
+        if (!this.board[row][col].isAttacked) {
+          this.board[row][col].color = isEnter ? color : '#ffffff';
+        }
     }
   }
 

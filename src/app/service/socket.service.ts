@@ -11,6 +11,19 @@ import { ConsoleService } from './console.service';
 export class SocketService {
 
   constructor(private socket: Socket, private AppRef: ApplicationRef, private gameStateService: GameStateService, private consoleService: ConsoleService) {
+    this.socket.on('connect', () => {
+      this.gameStateService.waitPlayerArrange();
+      this.consoleService.log('[Socket] Successfully connected to the server');
+    });
+    this.socket.on('connect_error', (error: any) => {
+      this.disConnect(false);
+      alert('Failed to connect to the server. Please try again later.');
+      this.consoleService.error('[Socket] Connection error:', error);
+    });
+
+    this.socket.on('disconnect', (reason: any) => {
+      this.consoleService.warn('[Socket] Disconnected:', reason);
+    });
   }
 
   connect() {
@@ -18,19 +31,6 @@ export class SocketService {
       first((isStable) => isStable))
       .subscribe(() => {
         this.socket.connect();
-        this.socket.on('connect', () => {
-          this.gameStateService.waitPlayerArrange();
-          this.consoleService.log('Successfully connected to the server');
-        });
-        this.socket.on('connect_error', (error: any) => {
-          this.disConnect();
-          alert('Failed to connect to the server. Please try again later.');
-          this.consoleService.error('Connection error:', error);
-        });
-
-        this.socket.on('disconnect', (reason: any) => {
-          this.consoleService.warn('Disconnected:', reason);
-        });
       });
   }
 
@@ -58,20 +58,21 @@ export class SocketService {
     return this.socket.fromEvent<boolean>('userLeave');
   }
 
-  sendPlayerData(playerData: PlayerData) {
-    this.socket.emit('playerData', playerData);
-  }
 
   getEnemyData(): Observable<{ enemyData: PlayerData, shouldChange: boolean }> {
     return this.socket.fromEvent<{ enemyData: PlayerData, shouldChange: boolean }>('enemyData');
+  }
+
+  sendPlayerData(playerData: PlayerData) {
+    this.socket.emit('playerData', playerData);
   }
 
   sendEnemyData(enemyData: PlayerData, shouldChange: boolean) {
     this.socket.emit('enemyData', { enemyData, shouldChange });
   }
 
-  disConnect() {
-    this.socket.disconnect();
+  disConnect(isGame: boolean) {
+    this.socket.disconnect(isGame);
   }
 
 }

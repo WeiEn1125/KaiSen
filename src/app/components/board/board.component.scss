@@ -9,10 +9,12 @@
 .board-area {
   @include flex-center-column;
   border-collapse: collapse;
+
   .row {
     display: flex;
   }
 }
+
 .cell {
   width: 30px;
   height: 30px;
@@ -26,6 +28,4 @@
   cursor: pointer;
 }
 
-.clicked {
-  transition: background-color 1s;
-}
+.clicked {}

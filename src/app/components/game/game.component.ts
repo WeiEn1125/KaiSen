@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, ViewChild } from '@angular/core';
+import { Component, NgZone, ViewChild } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { GameStateService } from '../../service/game-state.service';
 import { GameStateEnum } from '../../models/game-state/game-state.enum';
@@ -6,6 +6,7 @@ import { PlayerData } from '../../models/player/player.model';
 import { PlayerDataService } from '../../player-data.service';
 import { SocketService } from '../../service/socket.service';
 import { BoardComponent } from '../board/board.component';
+import { ConsoleService } from '../../service/console.service';
 
 @Component({
   selector: 'app-game',
@@ -22,9 +23,10 @@ export class GameComponent {
   messages: string[] = [];
   userCount: number = 0;
   isFirst: boolean = false;
+  isWin: boolean = false;
   @ViewChild(BoardComponent) boardComponent !: BoardComponent;
 
-  constructor(private gameStateService: GameStateService, private playerDataService: PlayerDataService, private socketService: SocketService, private ngZone: NgZone, private playerService: PlayerDataService) { }
+  constructor(private gameStateService: GameStateService, private playerDataService: PlayerDataService, private socketService: SocketService, private ngZone: NgZone, private playerService: PlayerDataService, private consoleService: ConsoleService) { }
 
   ngOnInit() {
     this.gameStateService.init();
@@ -32,12 +34,19 @@ export class GameComponent {
     this.gameState$.pipe(
       tap(state => {
         this.currentGameState = state;
+        this.consoleService.log('[Game State]', state);
         switch (state) {
           case GameStateEnum.PLAYER_ATTACK:
             this.currentPlayerData = this.playerDataService.playerData;
             break;
           case GameStateEnum.WAIT_PLAYER_ATTACK:
             this.currentPlayerData = this.playerDataService.playerData;
+            break;
+          case GameStateEnum.GAME_WIN:
+            this.socketService.disConnect(true);
+            break;
+          case GameStateEnum.GAME_LOSE:
+            this.socketService.disConnect(true);
             break;
         }
       })
@@ -91,7 +100,7 @@ export class GameComponent {
     this.socketService.getUserLeave().subscribe((userLeave: boolean) => {
       this.ngZone.run(() => {
         if (userLeave) {
-          this.socketService.disConnect();
+          this.socketService.disConnect(false);
           alert('Your enemy leave the room!!');
           this.gameStateService.playerArrange();
         }
@@ -99,7 +108,7 @@ export class GameComponent {
     })
   }
   ngOnDestroy() {
-    this.socketService.disConnect();
+    this.socketService.disConnect(false);
   }
 
   playerArrange(): void {
@@ -107,11 +116,11 @@ export class GameComponent {
   }
 
   leaveRoom(): void {
-    this.socketService.disConnect();
+    this.socketService.disConnect(false);
     this.gameStateService.playerArrange();
   }
 
-  gameEnd(): void {
-    this.gameStateService.gameEnd();
+  restart(): void {
+    this.gameStateService.gameStart();
   }
 }
