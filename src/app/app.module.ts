@@ -10,7 +10,13 @@ import { ShipComponent } from './components/ship/ship.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { FormsModule } from '@angular/forms';
 
-const config: SocketIoConfig = { url: 'http://localhost:3000', options: { autoConnect: false } };
+const config: SocketIoConfig = {
+  url: 'https://kaisen-server.onrender.com',
+  options: {
+    autoConnect: false
+  }
+};
+
 @NgModule({
   declarations: [
     AppComponent,
