@@ -5,29 +5,34 @@ import { PlayerData } from '../models/player/player.model';
 import { GameStateService } from './game-state.service';
 import { ConsoleService } from './console.service';
 import { GameStateEnum } from '../models/game-state/game-state.enum';
+import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
 
-  constructor(private socket: Socket, private AppRef: ApplicationRef, private gameStateService: GameStateService, private consoleService: ConsoleService) {
+  constructor(private socket: Socket, private AppRef: ApplicationRef, private gameStateService: GameStateService, private consoleService: ConsoleService,private loadingService:LoadingService) {
     this.socket.on('connect', () => {
+      this.loadingService.hide();
       this.gameStateService.waitPlayerArrange();
       this.consoleService.log('[Socket] Successfully connected to the server');
     });
     this.socket.on('connect_error', (error: any) => {
+      this.loadingService.hide();
       this.disConnect();
       this.consoleService.error('[Socket] Connection error:', error);
       alert('Failed to connect to the server. Please try again later.');
     });
 
     this.socket.on('disconnect', (reason: any) => {
+      this.loadingService.hide();
       this.consoleService.warn('[Socket] Disconnected:', reason);
     });
   }
 
   connect() {
+    this.loadingService.show();
     this.AppRef.isStable.pipe(
       first((isStable) => isStable))
       .subscribe(() => {

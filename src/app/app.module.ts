@@ -9,6 +9,7 @@ import { BoardComponent } from './components/board/board.component';
 import { ShipComponent } from './components/ship/ship.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { FormsModule } from '@angular/forms';
+import { LoadingComponent } from './components/loading/loading.component';
 
 const config: SocketIoConfig = {
   url: 'https://kaisen-server.onrender.com',
@@ -23,6 +24,7 @@ const config: SocketIoConfig = {
     GameComponent,
     BoardComponent,
     ShipComponent,
+    LoadingComponent,
   ],
   imports: [
     BrowserModule,
