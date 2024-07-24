@@ -53,7 +53,6 @@ export class GameComponent implements OnInit, OnDestroy {
             break;
           case GameStateEnum.GAME_WIN:
           case GameStateEnum.GAME_LOSE:
-            this.socketService.disConnect();
             break;
         }
       })
@@ -130,5 +129,6 @@ export class GameComponent implements OnInit, OnDestroy {
 
   restart(): void {
     this.gameStateService.gameStart();
+    this.socketService.disConnect();
   }
 }

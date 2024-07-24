@@ -1,4 +1,4 @@
-import { ApplicationRef, inject, Injectable } from '@angular/core';
+import { ApplicationRef, inject, Injectable, NgZone } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
 import { first, Observable } from 'rxjs';
 import { PlayerData } from '../models/player/player.model';
@@ -12,22 +12,28 @@ import { LoadingService } from './loading.service';
 })
 export class SocketService {
 
-  constructor(private socket: Socket, private AppRef: ApplicationRef, private gameStateService: GameStateService, private consoleService: ConsoleService,private loadingService:LoadingService) {
+  constructor(private socket: Socket, private AppRef: ApplicationRef, private gameStateService: GameStateService, private consoleService: ConsoleService, private loadingService: LoadingService, private ngZone: NgZone) {
     this.socket.on('connect', () => {
-      this.loadingService.hide();
-      this.gameStateService.waitPlayerArrange();
-      this.consoleService.log('[Socket] Successfully connected to the server');
+      this.ngZone.run(() => {
+        this.loadingService.hide();
+        this.gameStateService.waitPlayerArrange();
+        this.consoleService.log('[Socket] Successfully connected to the server');
+      });
     });
     this.socket.on('connect_error', (error: any) => {
-      this.loadingService.hide();
-      this.disConnect();
-      this.consoleService.error('[Socket] Connection error:', error);
-      alert('Failed to connect to the server. Please try again later.');
+      this.ngZone.run(() => {
+        this.loadingService.hide();
+        this.disConnect();
+        this.consoleService.error('[Socket] Connection error:', error);
+        alert('Failed to connect to the server. Please try again later.');
+      });
     });
 
     this.socket.on('disconnect', (reason: any) => {
-      this.loadingService.hide();
-      this.consoleService.warn('[Socket] Disconnected:', reason);
+      this.ngZone.run(() => {
+        this.loadingService.hide();
+        this.consoleService.warn('[Socket] Disconnected:', reason);
+      });
     });
   }
 
